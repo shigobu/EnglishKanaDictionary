@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace EnglishKana
 {
+    /// <summary>
+    /// 英単語を含む文字列を英単語の読みと対応するカナに変換する関数を提供します。
+    /// </summary>
     public class EnglishKanaDictionary : Dictionary<string, string>
     {
         /// <summary>
@@ -70,8 +73,8 @@ namespace EnglishKana
             //英単語の抽出
             Regex regex = new Regex(@"[a-zA-Z'.]+", RegexOptions.IgnoreCase);
             IEnumerable<Match> matchCollection = regex.Matches(sourceString).Cast<Match>();
-            //Matchから文字列を取得
-            IEnumerable<string> englishWords = matchCollection.Select(match => match.Value.ToLowerInvariant());
+            //Matchから文字列を取得。文字数が大きい順で並び替え。
+            IEnumerable<string> englishWords = matchCollection.Select(match => match.Value.ToLowerInvariant()).OrderByDescending(x => x.Length);
 
             string returnString = sourceString;
             foreach (var english in englishWords)
