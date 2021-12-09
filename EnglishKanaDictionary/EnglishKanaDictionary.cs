@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections;
+﻿using RomajiToHiraganaLibrary;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 
 namespace EnglishKana
 {
@@ -71,7 +69,7 @@ namespace EnglishKana
         public string ReplaceEnglishToKana(string sourceString)
         {
             //英単語の抽出
-            Regex regex = new Regex(@"[a-zA-Z'.]+", RegexOptions.IgnoreCase);
+            Regex regex = new Regex(@"[a-zA-Z']+", RegexOptions.IgnoreCase);
             IEnumerable<Match> matchCollection = regex.Matches(sourceString).Cast<Match>();
             //Matchから文字列を取得。文字数が大きい順で並び替え。
             IEnumerable<string> englishWords = matchCollection.Select(match => match.Value.ToLowerInvariant()).OrderByDescending(x => x.Length);
@@ -97,6 +95,9 @@ namespace EnglishKana
                 returnString = returnString.ToLowerInvariant().Replace(english, kana);
             }
 
+            //ローマ字辞書を全て走査し置換を行うため、最後に行う。
+            returnString = RomajiToHiragana.Convert(returnString);
+
             return returnString;
         }
 
@@ -107,6 +108,12 @@ namespace EnglishKana
         /// <returns></returns>
         private string TwoWordEngToKana(string word)
         {
+            //6文字未満はスキップ
+            if (word.Length < 6)
+            {
+                return null;
+            }
+
             for (int i = 0; i < word.Length - 1; i++)
             {
                 string eng1 = word.Substring(0, i + 1);
